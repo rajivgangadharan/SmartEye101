@@ -11,6 +11,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
 source("../../../R/jirametrics.R")
 fileName <- params$data
 df <- readDataset(fileName)

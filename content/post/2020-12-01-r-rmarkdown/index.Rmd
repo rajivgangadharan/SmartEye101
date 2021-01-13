@@ -1,37 +1,168 @@
 ---
-title: "Hello R Markdown"
-author: "Frida Gomam"
-date: 2020-12-01T21:13:14-05:00
-categories: ["R"]
-tags: ["R Markdown", "plot", "regression"]
+title: Performance stats for OP as of Aug 2020
+author: 'Rajiv Gangadharan'
+date: '2021-01-14'
+slug: performance-stats-for-op-as-of-aug-2020
+categories: ["Performance Stats"]
+tags: [metrics, OP, "Performance Stats"]
+params:
+  data: "../../../DataSets/Opics.dat"
+  date_from: "2020-03-18"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
+source("../../../R/jirametrics.R")
+fileName <- params$data
+df <- readDataset(fileName)
+tib <- df %>% 
+      as_tibble() %>%
+      mutate(crdt = toDate(Created),
+             updt = toDate(Updated),
+             cldt = toDate(Closed),
+             cylt = as.numeric(getAge(crdt, cldt))
+      ) %>%
+     filter(cldt >= as.Date(params$date_from))
 ```
 
-# R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Features
+===========================================
 
-You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-fit <- lm(dist ~ speed, data = cars)
-fit
+### Feature Cycle Time
+```{r epics, include=TRUE, echo=FALSE}
+color_point <- c(finastra_cols("crimson"),
+                 finastra_cols("orange"),
+                 finastra_cols("fuchsia"),
+                 finastra_cols("blue")
+                 )
+epics <- tib %>% filter(! is.na(Closed)) %>% 
+                 filter(Type == "Epic")
+                 
+ggplot(epics, aes(x=cldt, y=cylt)) +
+    geom_point(aes(colour = factor(Priority))) +
+    geom_smooth(method = "loess",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour=finastra_cols("crimson"),
+                linetype="dashed",
+                size=0.75) +
+    xlab("Reporting Period") +
+    ylab("Cycle Time (Days)") +
+    scale_fill_manual(values=color_point) +
+    finastra_theme
 ```
 
-# Including Plots
 
-You can also embed plots. See Figure \@ref(fig:pie) for example:
+### Feature Throughput
+```{r feature_throughput_line_plot, include=TRUE, echo=FALSE}
+throughput_df.epics  <- epics %>%   group_by(cldt) %>%  
+  summarise(nwi = length(Key),.groups='keep')
+ggplot(throughput_df.epics, aes(x=cldt, y=nwi)) +
+    geom_line() +
+  geom_point(size=2, color="#FF9999") +
+    geom_smooth(method = "lm",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour="red", 
+                size=1) +
+    xlab("Reporting Period") +
+    ylab("Number of Work Items") +
+    finastra_theme
+```
 
-```{r pie, fig.cap='A fancy pie chart.', tidy=FALSE}
-par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c('Sky', 'Sunny side of pyramid', 'Shady side of pyramid'),
-  col = c('#0292D8', '#F7EA39', '#C4B632'),
-  init.angle = -50, border = NA
+Stories
+===========================================
+
+### Story Cycle Time (All)
+```{r story_all, include=TRUE, echo=FALSE}
+color_point <- c(finastra_cols("crimson"),
+                 finastra_cols("orange"),
+                 finastra_cols("fuchsia"),
+                 finastra_cols("blue")
+                 )
+stories_all <- tib %>% filter(! is.na(Closed)) %>% filter(Type == "Story")
+ggplot(stories_all, aes(x=cldt, y=cylt)) +
+    geom_point(aes(colour = factor(Priority))) +
+    geom_smooth(method = "loess",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour=finastra_cols("crimson"),
+                linetype="dashed",
+                size=0.75) +
+    xlab("Reporting Period") +
+    ylab("Cycle Time (Days)") +
+    scale_fill_manual(values=color_point) +
+    finastra_theme  
+```
+
+
+### Story Cycle Time (Critical & High)
+```{r story_critical_and_high, include=TRUE, echo=FALSE, warning=FALSE}
+color_point <- c(finastra_cols("crimson"),
+                 finastra_cols("orange"),
+                 finastra_cols("fuchsia"),
+                 finastra_cols("blue")
+                 )
+stories_critical_and_high <- tib %>% 
+  filter(! is.na(Closed)) %>% filter(Type == "Story") %>%
+  filter(Priority == 'Critical' | Priority == 'High' )
+ggplot(stories_critical_and_high, aes(x=cldt, y=cylt)) +
+    geom_point(aes(colour = factor(Priority))) +
+    geom_smooth(method = "loess",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour=finastra_cols("crimson"),
+                linetype="dashed",
+                size=0.75) +
+    xlab("Reporting Period") +
+    ylab("Cycle Time (Days)") +
+    scale_fill_manual(values=color_point) +
+    finastra_theme
+```
+
+### Story Throughput
+```{r stories_throughput, include=TRUE, echo=FALSE}
+throughput_df.stories  <- stories_all %>%   group_by(cldt) %>%  
+  summarise(nwi = length(Key),.groups='drop')
+ggplot(throughput_df.stories, aes(x=cldt, y=nwi)) +
+    geom_line() +
+    geom_point(size=2, color="#FF9999") +
+    geom_smooth(method = "lm",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour="red", 
+                size=1) +
+    xlab("Reporting Period") +
+    ylab("Number of Work Items") +
+    finastra_theme
+```
+
+Defects
+===========================================
+
+### Defect Cycle Time
+```{r defect_cycle_time, include=TRUE, echo=FALSE}
+defect.closed <- tib %>% filter(! is.na(Closed)) %>% filter(Type == "Defect")
+ggplot(defect.closed, aes(x=cldt, y=cylt)) +
+    geom_point(aes(colour = factor(Priority))) +
+    geom_smooth(method = "lm",
+                formula = y ~ x, 
+                se = FALSE, 
+                colour="#FF9999", 
+                size=1) +
+    xlab("Reporting Period") +
+    ylab("Cycle Time (Days)") +
+    finastra_theme
+```
+
+### Closed Defects (Critical, Top50)
+
+```{r defects, include=TRUE, echo=FALSE}
+  DT::datatable(
+        defect.closed %>% filter(Priority == "Critical") %>%
+          arrange(desc(cylt)) %>% 
+        select(Key, Priority, cylt)
 )
 ```
+
