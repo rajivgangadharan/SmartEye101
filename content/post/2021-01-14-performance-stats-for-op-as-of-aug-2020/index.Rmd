@@ -97,7 +97,7 @@ ggplot(stories_all, aes(x=cldt, y=cylt)) +
 
 
 ### Story Cycle Time (Critical & High)
-```{r story_critical_and_high, include=TRUE, echo=FALSE}
+```{r story_critical_and_high, include=TRUE, echo=FALSE, warning=FALSE}
 color_point <- c(finastra_cols("crimson"),
                  finastra_cols("orange"),
                  finastra_cols("fuchsia"),
