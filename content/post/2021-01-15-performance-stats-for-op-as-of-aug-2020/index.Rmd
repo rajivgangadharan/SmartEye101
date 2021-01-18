@@ -52,7 +52,7 @@ epics_cycle_time_plot <- ggplot(epics, aes(x=cldt, y=cylt)) +
     scale_fill_manual(values=color_point) +
     finastra_theme
 
-ggplotly(epics_cycle_time_plot)
+epics_cycle_time_plot
 
 ```
 
