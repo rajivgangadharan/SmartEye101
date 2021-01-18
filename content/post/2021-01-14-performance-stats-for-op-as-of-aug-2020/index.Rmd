@@ -39,7 +39,7 @@ color_point <- c(finastra_cols("crimson"),
 epics <- tib %>% filter(! is.na(Closed)) %>% 
                  filter(Type == "Epic")
                  
-ggplot(epics, aes(x=cldt, y=cylt)) +
+epics_cycle_time_plot <- ggplot(epics, aes(x=cldt, y=cylt)) +
     geom_point(aes(colour = factor(Priority))) +
     geom_smooth(method = "loess",
                 formula = y ~ x, 
@@ -51,6 +51,9 @@ ggplot(epics, aes(x=cldt, y=cylt)) +
     ylab("Cycle Time (Days)") +
     scale_fill_manual(values=color_point) +
     finastra_theme
+
+ggplotly(epics_cycle_time_plot)
+
 ```
 
 
@@ -121,6 +124,7 @@ ggplot(stories_critical_and_high, aes(x=cldt, y=cylt)) +
     finastra_theme
 ```
 
+
 ### Story Throughput
 ```{r stories_throughput, include=TRUE, echo=FALSE}
 throughput_df.stories  <- stories_all %>%   group_by(cldt) %>%  
@@ -156,7 +160,7 @@ ggplot(defect.closed, aes(x=cldt, y=cylt)) +
     finastra_theme
 ```
 
-### Closed Defects (Critical, Top50)
+### Closed Defects (Critical)
 
 ```{r defects, include=TRUE, echo=FALSE}
   DT::datatable(
