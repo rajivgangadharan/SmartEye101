@@ -3,25 +3,37 @@ require(ggplot2)
 require(lubridate)
 require(knitr)
 require(dplyr)
-require(kableExtra)
 require(formattable)
 require(tidyquant)
 require(tidyverse)
 require(blogdown)
-require(DT)
+
+if (!require("DT")) install.packages('rstudio/DT')
+if (!require("rlist")) devtools::install_github("renkun-ken/rlist")
+if (!require("highcharter")) install.packaged("highcharter")
+
+library(flexdashboard)
+library(knitr)
+library(DT)
+library(rpivotTable)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(openintro)
+library(highcharter)
+library(ggvis)
 
 finastra_colors <- list(
   `crimson`        = "#F9423A",
-  `charcoal`      = "#414141",
   `blue`       = "#009CBD",
+  `green` = "#26D07C",
+  `pink` = "#F04E96",
   `orange`     = "#ED8B00",
   `yellow`     = "#FFD100",
-  `pink` = "#F04E96",
   `fuchsia`  = "#C137A2",
   `violet` = "#694ED6",
-  `green` = "#26D07C",
   `tan` = "#C7C8CA",
-  `grey` = "#8D96A3"
+  `charcoal`= "#414141"
   )
 
 
@@ -49,7 +61,7 @@ branded_pal <- function(primary = "fuchsia", other="violet", direction = 1) {
       } else {
         finastra_colors[other]
       }
-      color_list <- c(other, branded_colors[primary])
+      color_list <- c(other, finastra_colors[primary])
       
     } else {
       color_list <- finastra_colors[1:n]
@@ -118,3 +130,23 @@ finastra_theme <-
         legend.title = element_blank(),
         panel.grid.major.y = element_line( size=.1, color="black" ),
         panel.grid.minor.y = element_blank())
+
+
+isWIP <- function(cldt, loopdt) {
+  stopifnot(is.Date(cldt) && is.Date(loopdt))
+  if (cldt >= loopdt) {
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+getAge <- function(crdt, loopdt) {
+  stopifnot(is.Date(crdt) && is.Date(loopdt))
+  if (crdt < loopdt) {
+    as.numeric(loopdt - crdt)
+  } else
+    0
+}
+
+
