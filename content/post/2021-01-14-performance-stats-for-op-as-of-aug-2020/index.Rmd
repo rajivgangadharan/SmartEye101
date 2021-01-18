@@ -44,7 +44,7 @@ epics_cycle_time_plot <- ggplot(epics, aes(x=cldt, y=cylt)) +
     geom_smooth(method = "loess",
                 formula = y ~ x, 
                 se = FALSE, 
-                colour=finastra_cols("orange"),
+                colour=finastra_colors["violet"],
                 linetype="dashed",
                 size=0.75) +
     xlab("Reporting Period") +
