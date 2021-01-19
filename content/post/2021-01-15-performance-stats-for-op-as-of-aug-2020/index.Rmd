@@ -43,10 +43,10 @@ epics_cycle_time_plot <- ggplot(epics, aes(x=cldt, y=cylt)) +
     geom_point(aes(colour = factor(Priority))) +
     geom_smooth(method = "loess",
                 formula = y ~ x, 
-                se = FALSE, 
+                se = TRUE, 
                 colour=finastra_colors["violet"],
                 linetype="dashed",
-                size=0.75) +
+                size=1) +
     xlab("Reporting Period") +
     ylab("Cycle Time (Days)") +
     scale_fill_manual(values=color_point) +
