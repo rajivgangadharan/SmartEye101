@@ -7,10 +7,14 @@ require(formattable)
 require(tidyquant)
 require(tidyverse)
 require(blogdown)
+require(plotly)
+require(r2d3)
 
 if (!require("DT")) install.packages('rstudio/DT')
 if (!require("rlist")) devtools::install_github("renkun-ken/rlist")
-if (!require("highcharter")) install.packaged("highcharter")
+if (!require("highcharter")) install.packages("highcharter")
+if (!require("r2d3")) install.packages("r2d3")
+if (!require("blogdown")) install.packages("blogdown")
 
 library(flexdashboard)
 library(knitr)
@@ -34,7 +38,7 @@ finastra_colors <- list(
   `violet` = "#694ED6",
   `tan` = "#C7C8CA",
   `charcoal`= "#414141"
-  )
+)
 
 
 
@@ -66,15 +70,15 @@ branded_pal <- function(primary = "fuchsia", other="violet", direction = 1) {
     } else {
       color_list <- finastra_colors[1:n]
     }
-      color_list <- unname(unlist(color_list))
-      if (direction >= 0) color_list else rev(color_list)
+    color_list <- unname(unlist(color_list))
+    if (direction >= 0) color_list else rev(color_list)
     
   }
 }
 
 scale_colour_branded <- function(primary = "fuchsia",  other = "violet", 
-                          direction = 1, 
-                          ...) {
+                                 direction = 1, 
+                                 ...) {
   ggplot2::discrete_scale("colour", "branded", 
                           branded_pal(primary, other, direction), 
                           ...
@@ -115,10 +119,7 @@ readDataset <- function(fileName, sep='|') {
 
 
 readCSVDataset <- function(fileName, sep='|') {
-  if (! file.exists(fileName)) {
-    paste0("'", fileName, "' does not exist, check the file name and full path.")
-    return(NULL)
-  }
+  stopifnot(file.exists(fileName))
   df <- read.csv2(fileName, header=TRUE, sep=sep)
   df
 }
@@ -134,19 +135,12 @@ finastra_theme <-
 
 isWIP <- function(cldt, loopdt) {
   stopifnot(is.Date(cldt) && is.Date(loopdt))
-  if (cldt >= loopdt) {
-    TRUE
-  } else {
-    FALSE
-  }
+  ifelse(cldt >= loopdt, TRUE, FALSE)
 }
 
 getAge <- function(crdt, loopdt) {
   stopifnot(is.Date(crdt) && is.Date(loopdt))
-  if (crdt < loopdt) {
-    as.numeric(loopdt - crdt)
-  } else
-    0
+  ifelse(crdt < loopdt, as.numeric(loopdt - crdt), 0)
 }
 
 
