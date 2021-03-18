@@ -1,34 +1,38 @@
-baseurl: /
+---
+baseurl: "/"
 languageCode: en-us
 title: A Hugo website
 theme: hugo-lithium
 googleAnalytics: ''
 disqusShortname: ''
 ignoreFiles:
-  - \.Rmd$
-  - \.Rmarkdown$
-  - _cache$
-  - \.knit\.md$
-  - \.utf8\.md$
+- "\\.Rmd$"
+- "\\.Rmarkdown$"
+- _cache$
+- "\\.knit\\.md$"
+- "\\.utf8\\.md$"
 permalinks:
-  post: /:year/:month/:day/:slug/
+  post: "/:year/:month/:day/:slug/"
 menu:
   main:
-    - name: About
-      url: /about/
-    - name: GitHub
-      url: https://github.com/rstudio/blogdown
-    - name: Twitter
-      url: https://twitter.com/rstudio
+  - url: https://twitter.com/rstudio
+    name: Twitter
+    weight: 1
+  - url: https://github.com/rstudio/blogdown
+    name: GitHub
+    weight: 2
+  - url: "/about/"
+    name: About
+    weight: 3
 params:
-  MathJaxCDN: //cdnjs.cloudflare.com/ajax/libs
+  MathJaxCDN: "//cdnjs.cloudflare.com/ajax/libs"
   MathJaxVersion: 2.7.5
   description: A website built through Hugo and blogdown.
   favicon: favicon.ico
-  highlightjsCDN: //cdnjs.cloudflare.com/ajax/libs
+  highlightjsCDN: "//cdnjs.cloudflare.com/ajax/libs"
   highlightjsLang:
-    - r
-    - yaml
+  - r
+  - yaml
   highlightjsTheme: github
   highlightjsVersion: 9.12.0
   logo:
